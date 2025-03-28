@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{8153C7BA-11BD-41C5-B548-1527152668E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radish.Core", "Source\Radish.Core\Radish.Core.csproj", "{078217F7-560B-4E36-B8E9-642BA1E05C89}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radish.Filesystem", "Source\Radish.Filesystem\Radish.Filesystem.csproj", "{BE4B6FC3-5E18-4846-818D-2C1875CD8719}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radish.GameFramework", "Source\Radish.GameFramework\Radish.GameFramework.csproj", "{265B8AA0-52E7-4514-A6E1-CC1E70CAFEE4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radish.Platform.SDL3", "Source\Radish.Platform.SDL3\Radish.Platform.SDL3.csproj", "{AAB56DAA-2773-483B-BA65-D0EDB637811F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radish.Serialization", "Source\Radish.Serialization\Radish.Serialization.csproj", "{C514CECB-C31B-4634-B836-45646278AE48}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{078217F7-560B-4E36-B8E9-642BA1E05C89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{078217F7-560B-4E36-B8E9-642BA1E05C89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{078217F7-560B-4E36-B8E9-642BA1E05C89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{078217F7-560B-4E36-B8E9-642BA1E05C89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE4B6FC3-5E18-4846-818D-2C1875CD8719}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE4B6FC3-5E18-4846-818D-2C1875CD8719}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE4B6FC3-5E18-4846-818D-2C1875CD8719}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE4B6FC3-5E18-4846-818D-2C1875CD8719}.Release|Any CPU.Build.0 = Release|Any CPU
+		{265B8AA0-52E7-4514-A6E1-CC1E70CAFEE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{265B8AA0-52E7-4514-A6E1-CC1E70CAFEE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{265B8AA0-52E7-4514-A6E1-CC1E70CAFEE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{265B8AA0-52E7-4514-A6E1-CC1E70CAFEE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAB56DAA-2773-483B-BA65-D0EDB637811F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAB56DAA-2773-483B-BA65-D0EDB637811F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAB56DAA-2773-483B-BA65-D0EDB637811F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAB56DAA-2773-483B-BA65-D0EDB637811F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C514CECB-C31B-4634-B836-45646278AE48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C514CECB-C31B-4634-B836-45646278AE48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C514CECB-C31B-4634-B836-45646278AE48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C514CECB-C31B-4634-B836-45646278AE48}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{078217F7-560B-4E36-B8E9-642BA1E05C89} = {8153C7BA-11BD-41C5-B548-1527152668E4}
+		{BE4B6FC3-5E18-4846-818D-2C1875CD8719} = {8153C7BA-11BD-41C5-B548-1527152668E4}
+		{265B8AA0-52E7-4514-A6E1-CC1E70CAFEE4} = {8153C7BA-11BD-41C5-B548-1527152668E4}
+		{AAB56DAA-2773-483B-BA65-D0EDB637811F} = {8153C7BA-11BD-41C5-B548-1527152668E4}
+		{C514CECB-C31B-4634-B836-45646278AE48} = {8153C7BA-11BD-41C5-B548-1527152668E4}
+	EndGlobalSection
+EndGlobal

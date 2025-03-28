@@ -1,0 +1,25 @@
+<Project>
+    <PropertyGroup>
+        <Authors>Audrey Castillo</Authors>
+        <Company>Radish Games</Company>
+        <Product>Radish Framework</Product>
+        <Copyright>Copyright © Radish Games. All rights reserved.</Copyright>
+        <RootNamespace>Radish</RootNamespace>
+
+        <ItemGroup>
+            <PackageReference Include="GitVersion.MsBuild" Version="6.1.0">
+                <PrivateAssets>all</PrivateAssets>
+            </PackageReference>
+        </ItemGroup>
+
+        <!-- Note: these only tell you which platform we are BUILDING on, not the runtime target -->
+        <RadishIsWindows>$([MSBuild]::IsOSPlatform('Windows'))</RadishIsWindows>
+        <RadishIsMac>$([MSBuild]::IsOSPlatform('OSX'))</RadishIsMac>
+        <RadishIsLinux>$([MSBuild]::IsOSPlatform('Linux'))</RadishIsLinux>
+
+        <!-- Note: these only tell you when we're building a published version -->
+        <RadishRuntimeIsWindows>$(RuntimeIdentifier.StartsWith('win'))</RadishRuntimeIsWindows>
+        <RadishRuntimeIsMac>$(RuntimeIdentifier.StartsWith('osx'))</RadishRuntimeIsMac>
+        <RadishRuntimeIsLinux>$(RuntimeIdentifier.StartsWith('linux'))</RadishRuntimeIsLinux>
+    </PropertyGroup>
+</Project>
