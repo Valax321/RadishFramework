@@ -15,6 +15,17 @@ namespace Radish.Logging
 	/// </summary>
 	public interface ILogger
 	{
+        #region Debug
+
+		void Debug(string message);
+
+	<# for(var i = 1; i <= TypeParamMax; i++) { #>
+		[StringFormatMethod("format")]
+		void Debug<<#= CreateTypeArgument(i) #>>(string format, <#= CreateParameters(i) #>);
+
+	<# } #>
+		#endregion
+
 		#region Info
 
 		void Info(string message);

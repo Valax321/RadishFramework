@@ -8,6 +8,7 @@ namespace Radish.Logging
         Info,
         Warning,
         Error,
-        Exception
+        Exception,
+        Debug,
     }
 }

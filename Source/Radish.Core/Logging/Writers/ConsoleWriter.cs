@@ -4,9 +4,14 @@ public sealed class ConsoleWriter : ILogWriter
 {
     public void Write(LogLevel level, string category, in ReadOnlySpan<char> formattedMessage)
     {
+#if !DEBUG
+        if (level == LogLevel.Debug)
+            return;
+#endif
+        
         var location = level switch
         {
-            LogLevel.Info => Console.Out,
+            LogLevel.Info or LogLevel.Debug => Console.Out,
             _ => Console.Error
         };
 
@@ -14,8 +19,9 @@ public sealed class ConsoleWriter : ILogWriter
         {
             LogLevel.Info => "INFO",
             LogLevel.Warning => "WARN",
-            LogLevel.Error => "ERROR",
-            LogLevel.Exception => "EXCEPTION",
+            LogLevel.Error => "EROR",
+            LogLevel.Exception => "EXPT",
+            LogLevel.Debug => "DEBG",
             _ => throw new ArgumentOutOfRangeException(nameof(level), level, null)
         };
         

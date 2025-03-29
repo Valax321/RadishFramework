@@ -431,6 +431,61 @@ namespace Radish.Logging
 
 			#endregion
 
+        #region Debug (Interface)
+
+		public void Debug(string message)
+			=> Write(LogLevel.Debug, Name, message);
+
+			public void Debug<T1>(string format, T1 arg1) 
+			=> Write(LogLevel.Debug, Name, format, arg1);
+
+			public void Debug<T1, T2>(string format, T1 arg1, T2 arg2) 
+			=> Write(LogLevel.Debug, Name, format, arg1, arg2);
+
+			public void Debug<T1, T2, T3>(string format, T1 arg1, T2 arg2, T3 arg3) 
+			=> Write(LogLevel.Debug, Name, format, arg1, arg2, arg3);
+
+			public void Debug<T1, T2, T3, T4>(string format, T1 arg1, T2 arg2, T3 arg3, T4 arg4) 
+			=> Write(LogLevel.Debug, Name, format, arg1, arg2, arg3, arg4);
+
+			public void Debug<T1, T2, T3, T4, T5>(string format, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5) 
+			=> Write(LogLevel.Debug, Name, format, arg1, arg2, arg3, arg4, arg5);
+
+			public void Debug<T1, T2, T3, T4, T5, T6>(string format, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6) 
+			=> Write(LogLevel.Debug, Name, format, arg1, arg2, arg3, arg4, arg5, arg6);
+
+			public void Debug<T1, T2, T3, T4, T5, T6, T7>(string format, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7) 
+			=> Write(LogLevel.Debug, Name, format, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+
+			public void Debug<T1, T2, T3, T4, T5, T6, T7, T8>(string format, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8) 
+			=> Write(LogLevel.Debug, Name, format, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+
+			public void Debug<T1, T2, T3, T4, T5, T6, T7, T8, T9>(string format, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9) 
+			=> Write(LogLevel.Debug, Name, format, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+
+			public void Debug<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(string format, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10) 
+			=> Write(LogLevel.Debug, Name, format, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+
+			public void Debug<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(string format, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11) 
+			=> Write(LogLevel.Debug, Name, format, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
+
+			public void Debug<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(string format, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12) 
+			=> Write(LogLevel.Debug, Name, format, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
+
+			public void Debug<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(string format, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13) 
+			=> Write(LogLevel.Debug, Name, format, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13);
+
+			public void Debug<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(string format, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14) 
+			=> Write(LogLevel.Debug, Name, format, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
+
+			public void Debug<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(string format, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15) 
+			=> Write(LogLevel.Debug, Name, format, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15);
+
+			public void Debug<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(string format, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15, T16 arg16) 
+			=> Write(LogLevel.Debug, Name, format, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
+
+			#endregion
+
 		#region Info (Interface)
 
 		public void Info(string message)

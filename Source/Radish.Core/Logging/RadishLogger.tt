@@ -23,7 +23,7 @@ namespace Radish.Logging
 
 		private static void Write(LogLevel level, string category, string message)
 		{
-			foreach (var writer in LogManager.registeredLoggers)
+			foreach (var writer in LogManager.RegisteredLoggers)
 			{
 				writer.Write(level, category, message.AsSpan());
 			}
@@ -34,7 +34,7 @@ namespace Radish.Logging
 			using var fmt = ZString.CreateStringBuilder();
 			fmt.Append(ex);
 			var span = fmt.AsSpan();
-			foreach (var writer in LogManager.registeredLoggers)
+			foreach (var writer in LogManager.RegisteredLoggers)
 			{
 				writer.Write(level, category, span);
 			}
@@ -45,7 +45,7 @@ namespace Radish.Logging
 			using var fmt = ZString.CreateStringBuilder();
 			fmt.AppendLine(message);
 			var span = fmt.AsSpan();
-			foreach (var writer in LogManager.registeredLoggers)
+			foreach (var writer in LogManager.RegisteredLoggers)
 			{
 				writer.Write(level, category, span);
 			}
@@ -57,7 +57,7 @@ namespace Radish.Logging
 			using var fmt = ZString.CreateStringBuilder();
 			fmt.AppendFormat(format, <#= CreateParameterNames(i) #>);
 			var span = fmt.AsSpan();
-			foreach (var writer in LogManager.registeredLoggers)
+			foreach (var writer in LogManager.RegisteredLoggers)
 			{
 				writer.Write(level, category, span);
 			}
@@ -70,11 +70,23 @@ namespace Radish.Logging
 			fmt.Append(' ');
 			fmt.Append(ex);
 			var span = fmt.AsSpan();
-			foreach (var writer in LogManager.registeredLoggers)
+			foreach (var writer in LogManager.RegisteredLoggers)
 			{
 				writer.Write(level, category, span);
 			}
 		}
+
+	<# } #>
+		#endregion
+
+        #region Debug (Interface)
+
+		public void Debug(string message)
+			=> Write(LogLevel.Debug, Name, message);
+
+	<# for(var i = 1; i <= TypeParamMax; i++) { #>
+		public void Debug<<#= CreateTypeArgument(i) #>>(string format, <#= CreateParameters(i) #>) 
+			=> Write(LogLevel.Debug, Name, format, <#= CreateParameterNames(i) #>);
 
 	<# } #>
 		#endregion
