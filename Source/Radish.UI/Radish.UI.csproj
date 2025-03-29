@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Radish.UI</RootNamespace>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <IsTrimmable>true</IsTrimmable>
+        <IsAotCompatible>true</IsAotCompatible>
+        <Title>Radish.UI</Title>
+        <Description>ImGui component for RadishFramework</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Radish.GameFramework\Radish.GameFramework.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="ImGui.NET" Version="1.91.6.1"/>
+    </ItemGroup>
+
+</Project>
