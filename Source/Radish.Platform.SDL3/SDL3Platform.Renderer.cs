@@ -9,13 +9,26 @@ public partial class SDL3Platform : IPlatformRenderer
 {
     public IPlatformRenderer GetRenderBackend() => this;
     
+    public void Initialized()
+    {
+        var windows = SDL_GetWindows();
+        foreach (var window in windows)
+        {
+            SDL_GetWindowSizeInPixels(window, out var w, out var h);
+            GraphicsDeviceManager.Reset(window, new Size(w, h), SDL_GetDisplayForWindow(window));
+        }
+    }
+
     private IntPtr _currentCommandBuffer = IntPtr.Zero;
     private IntPtr _currentSwapchainTexture = IntPtr.Zero;
     private Size _currentSwapchainSize;
     private SDL_GPUTextureFormat _currentSwapchainFormat;
     
-    public IntPtr InitDeviceWithWindowHandle(IntPtr window)
+    public IntPtr InitDeviceWithWindowHandle(IntPtr window, out Size pixelSize, out uint displayIndex)
     {
+        if (window == IntPtr.Zero)
+            throw new InvalidOperationException("Window cannot be null");
+        
         var shaderFormats = SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_MSL |
                             SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_DXIL |
                             SDL_GPUShaderFormat.SDL_GPU_SHADERFORMAT_SPIRV;
@@ -33,6 +46,10 @@ public partial class SDL3Platform : IPlatformRenderer
 
         if (!SDL_ClaimWindowForGPUDevice(device, window))
             throw new PlatformException($"Failed to claim window for GPU device: {SDL_GetError()}");
+
+        SDL_GetWindowSizeInPixels(window, out var w, out var h);
+        pixelSize = new Size(w, h);
+        displayIndex = SDL_GetDisplayForWindow(window);
         
         return device;
     }

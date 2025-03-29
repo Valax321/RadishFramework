@@ -5,6 +5,7 @@ using System.Reflection;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Radish.Graphics;
+using Radish.Input;
 using Radish.Logging;
 using Radish.Platform;
 using Radish.Services;
@@ -21,7 +22,6 @@ public abstract class Application : IDisposable
     private static readonly ILogger Logger = LogManager.GetLoggerForType<Application>();
     
     public IPlatformBackend Platform { get; }
-    public GraphicsDeviceManager GraphicsDeviceManager { get; }
     public GameServiceCollection ServiceCollection { get; }
     public Window Window { get; }
     
@@ -33,6 +33,7 @@ public abstract class Application : IDisposable
     private List<IGameUpdate> _orderedUpdatables = [];
     private List<IGameDraw> _orderedDrawables = [];
     private double _lastUpdateTime;
+    private IGraphicsDevice _graphicsDevice;
 
     protected Application(in ApplicationOptions options)
     {
@@ -42,10 +43,9 @@ public abstract class Application : IDisposable
 
         Window = new Window(Platform, new Size(1280, 720));
         Window.Title = Assembly.GetEntryAssembly()?.GetName().Name ?? "Radish Game";
-
-        GraphicsDeviceManager = new GraphicsDeviceManager(this);
-        ServiceCollection.AddSingleton(GraphicsDeviceManager);
-        ServiceCollection.AddSingleton<IGraphicsDevice>(GraphicsDeviceManager);
+        
+        Keyboard.SetPlatformBackend(Platform);
+        Gamepad.SetPlatformBackend(Platform);
     }
 
     public void Run()
@@ -61,6 +61,8 @@ public abstract class Application : IDisposable
         Services = collection.BuildServiceProvider();
         foreach (var c in Services.GetServices<IServiceConsumer>())
             c.ResolveServices(Services);
+
+        _graphicsDevice = Services.GetRequiredService<IGraphicsDevice>();
         
         _orderedUpdatables.AddRange(Services.GetServices<IGameUpdate>()
             .OrderBy(x => x.UpdateOrder));
@@ -87,9 +89,9 @@ public abstract class Application : IDisposable
             var dt = CalculateDeltaTime();
             Update(dt);
             
-            GraphicsDeviceManager.BeginFrame();
+            _graphicsDevice.BeginFrame();
             Draw(dt);
-            GraphicsDeviceManager.EndFrame();
+            _graphicsDevice.EndFrame();
 
             if (Platform.WantsToQuit)
                 IsRunning = false;

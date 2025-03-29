@@ -1,5 +1,6 @@
 using System.Drawing;
 using JetBrains.Annotations;
+using Radish.Input;
 
 namespace Radish.Platform;
 
@@ -20,8 +21,10 @@ public interface IPlatformBackend : IDisposable
     string GetWindowTitle(IntPtr window);
     void SetWindowSize(IntPtr window, Size size);
     Size GetWindowSize(IntPtr window);
+    Size GetWindowPixelSize(IntPtr window);
     void ShowWindow(IntPtr window);
     void HideWindow(IntPtr window);
+    uint GetWindowDisplayIndex(IntPtr window);
     #endregion
 
     #region Paths
@@ -31,12 +34,30 @@ public interface IPlatformBackend : IDisposable
 
     #region Graphics
     IPlatformRenderer GetRenderBackend();
+    void Initialized();
     #endregion
 
     #region Timers
 
     double GetPerformanceCounter();
     double GetPerformanceCounterFrequency();
+
+    #endregion
+
+    #region Gamepad
+
+    GamepadType GetGamepadType(uint id);
+    string? GetGamepadName(uint id);
+    void SetGamepadPlayerIndex(uint id, int index);
+    int GetGamepadPlayerIndex(uint id);
+    void SetGamepadLED(uint id, Color color);
+    void SendGamepadRumblePacket(uint id, in GamepadRumbleState state);
+
+    #endregion
+    
+    #region Keyboard
+
+    Keys ScancodeToKeycode(Keys scancode);
 
     #endregion
 }

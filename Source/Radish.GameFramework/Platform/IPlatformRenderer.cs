@@ -1,10 +1,11 @@
+using System.Drawing;
 using Radish.Graphics;
 
 namespace Radish.Platform;
 
 public interface IPlatformRenderer
 {
-    public IntPtr InitDeviceWithWindowHandle(IntPtr window);
+    public IntPtr InitDeviceWithWindowHandle(IntPtr window, out Size pixelSize, out uint displayIndex);
     public void ReleaseDevice(IntPtr renderer, IntPtr window);
     public bool SetVsyncEnabled(IntPtr renderer, IntPtr window, bool enabled);
 
