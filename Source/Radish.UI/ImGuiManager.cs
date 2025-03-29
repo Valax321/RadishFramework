@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.InteropServices.Marshalling;
 using ImGuiNET;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,7 @@ using Radish.Services;
 namespace Radish.UI;
 
 [PublicAPI]
-public sealed class ImGuiManager : 
+public unsafe sealed class ImGuiManager : 
     IDisposable, 
     IGameDraw, 
     IGameUpdate,
@@ -47,6 +48,9 @@ public sealed class ImGuiManager :
         
         if (OperatingSystem.IsMacOS())
             io.ConfigMacOSXBehaviors = true;
+
+        io.NativePtr->BackendPlatformName = Utf8StringMarshaller.ConvertToUnmanaged("RadishFramework");
+        io.NativePtr->BackendRendererName = Utf8StringMarshaller.ConvertToUnmanaged("RadishFramework");
         
         TextInput.OnTextInput += OnTextInput;
         Mouse.OnClick += OnMouseClick;
