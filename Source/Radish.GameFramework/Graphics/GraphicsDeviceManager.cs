@@ -14,12 +14,13 @@ public class GraphicsDeviceManager : IDisposable, IGraphicsDevice
     private static InternalResetDelegate? _onResetCalledByBackend;
     
     private IPlatformRenderer Renderer { get; }
+    public IGraphicsDevice.DeviceResetDelegate? ResetCallback { get; set; }
+    
     private IntPtr _device;
     private readonly Window _window;
     private readonly IPlatformBackend _platform;
 
     private HashSet<IntPtr> _allocatedTextures = [];
-    private IGraphicsDevice.DeviceResetDelegate? _onDeviceReset;
 
     public bool EnableVSync
     {
@@ -79,8 +80,6 @@ public class GraphicsDeviceManager : IDisposable, IGraphicsDevice
     {
         Renderer.EndFrame(_device);
     }
-
-    public IGraphicsDevice.DeviceResetDelegate? ResetCallback { get; set; }
 
     public IntPtr AcquireTexture2D(TextureFormat format, Size size, bool isLinear, bool hasMipmaps)
     {
