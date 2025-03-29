@@ -8,6 +8,8 @@
         <IsTrimmable>true</IsTrimmable>
         <IsAotCompatible>true</IsAotCompatible>
         <RootNamespace>Radish.Platform</RootNamespace>
+        <Title>Radish.Platform.SDL3</Title>
+        <Description>SDL3 backend for RadishFramework</Description>
     </PropertyGroup>
 
     <ItemGroup>

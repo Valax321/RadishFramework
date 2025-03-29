@@ -4,8 +4,8 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Title>Radish Game Framework</Title>
-        <Description>Game-level components of the Radish Framework</Description>
+        <Title>Radish.GameFramework</Title>
+        <Description>Game engine component of RadishFramework</Description>
         <IsTrimmable>true</IsTrimmable>
         <IsAotCompatible>true</IsAotCompatible>
     </PropertyGroup>
