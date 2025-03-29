@@ -45,6 +45,7 @@ public abstract class Application : IDisposable
 
         GraphicsDeviceManager = new GraphicsDeviceManager(this);
         ServiceCollection.AddSingleton(GraphicsDeviceManager);
+        ServiceCollection.AddSingleton<IGraphicsDevice>(GraphicsDeviceManager);
     }
 
     public void Run()
