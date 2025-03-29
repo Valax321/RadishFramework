@@ -1,11 +1,13 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Reflection;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Radish.Graphics;
 using Radish.Logging;
 using Radish.Platform;
+using Radish.Services;
 
 namespace Radish.Framework;
 
@@ -19,8 +21,8 @@ public abstract class Application : IDisposable
     private static readonly ILogger Logger = LogManager.GetLoggerForType<Application>();
     
     public IPlatformBackend Platform { get; }
-    protected GameServiceCollection ServiceCollection { get; }
     public GraphicsDeviceManager GraphicsDeviceManager { get; }
+    public GameServiceCollection ServiceCollection { get; }
     public Window Window { get; }
     
     public ServiceProvider? Services { get; private set; }
@@ -28,14 +30,18 @@ public abstract class Application : IDisposable
     [MemberNotNullWhen(true, nameof(Services))]
     public bool IsRunning { get; private set; }
 
+    private List<IGameUpdate> _orderedUpdatables = [];
+    private List<IGameDraw> _orderedDrawables = [];
+    private double _lastUpdateTime;
+
     protected Application(in ApplicationOptions options)
     {
         ServiceCollection = [];
         Platform = options.PlatformFactory();
         ServiceCollection.AddSingleton(Platform);
 
-        Window = new Window(Platform);
-        Window.Title = Assembly.GetEntryAssembly()?.FullName ?? "Radish Game";
+        Window = new Window(Platform, new Size(1280, 720));
+        Window.Title = Assembly.GetEntryAssembly()?.GetName().Name ?? "Radish Game";
 
         GraphicsDeviceManager = new GraphicsDeviceManager(this);
         ServiceCollection.AddSingleton(GraphicsDeviceManager);
@@ -43,21 +49,33 @@ public abstract class Application : IDisposable
 
     public void Run()
     {
+        ResolveServices(ServiceCollection);
         Initialize();
         RunMainLoop();
         Quit();
     }
 
+    private void ResolveServices(GameServiceCollection collection)
+    {
+        Services = collection.BuildServiceProvider();
+        foreach (var c in Services.GetServices<IServiceConsumer>())
+            c.ResolveServices(Services);
+        
+        _orderedUpdatables.AddRange(Services.GetServices<IGameUpdate>()
+            .OrderBy(x => x.UpdateOrder));
+        _orderedDrawables.AddRange(Services.GetServices<IGameDraw>()
+            .OrderBy(x => x.DrawOrder));
+    }
+
     protected virtual void Initialize()
     {
-        Services = ServiceCollection.BuildServiceProvider();
-        foreach (var g in Services.GetServices<IGameInitialize>())
-        {
-            g.Initialize();
-        }
+        Debug.Assert(Services != null);
         
+        foreach (var g in Services!.GetServices<IGameInitialize>())
+            g.Initialize();
+        
+        Window.Show();
         IsRunning = true;
-        Logger.Info("Application initialized");
     }
 
     private void RunMainLoop()
@@ -67,6 +85,10 @@ public abstract class Application : IDisposable
             Platform.PumpEvents();
             var dt = CalculateDeltaTime();
             Update(dt);
+            
+            GraphicsDeviceManager.BeginFrame();
+            Draw(dt);
+            GraphicsDeviceManager.EndFrame();
 
             if (Platform.WantsToQuit)
                 IsRunning = false;
@@ -77,10 +99,19 @@ public abstract class Application : IDisposable
     {
         Debug.Assert(IsRunning);
 
-        foreach (var g in Services.GetServices<IGameUpdate>()
-                     .OrderBy(x => x.UpdateOrder))
+        foreach (var g in _orderedUpdatables)
         {
             g.Update(deltaTime);
+        }
+    }
+
+    protected virtual void Draw(TimeSpan deltaTime)
+    {
+        Debug.Assert(IsRunning);
+        
+        foreach (var g in _orderedDrawables)
+        {
+            g.Draw(deltaTime);
         }
     }
 
@@ -103,6 +134,10 @@ public abstract class Application : IDisposable
 
     private TimeSpan CalculateDeltaTime()
     {
-        return TimeSpan.FromSeconds(1 / 60.0);
+        var now = Platform.GetPerformanceCounter();
+        var scale = Platform.GetPerformanceCounterFrequency();
+        var diff = now - _lastUpdateTime;
+        _lastUpdateTime = now;
+        return TimeSpan.FromSeconds(diff / scale);
     }
 }

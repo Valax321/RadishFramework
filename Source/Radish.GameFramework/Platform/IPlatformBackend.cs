@@ -14,12 +14,14 @@ public interface IPlatformBackend : IDisposable
     #endregion
 
     #region Windows
-    IntPtr CreateWindow();
+    IntPtr CreateWindow(Size size);
     void DestroyWindow(IntPtr window);
     void SetWindowTitle(IntPtr window, string title);
     string GetWindowTitle(IntPtr window);
     void SetWindowSize(IntPtr window, Size size);
     Size GetWindowSize(IntPtr window);
+    void ShowWindow(IntPtr window);
+    void HideWindow(IntPtr window);
     #endregion
 
     #region Paths
@@ -29,5 +31,12 @@ public interface IPlatformBackend : IDisposable
 
     #region Graphics
     IPlatformRenderer GetRenderBackend();
+    #endregion
+
+    #region Timers
+
+    double GetPerformanceCounter();
+    double GetPerformanceCounterFrequency();
+
     #endregion
 }

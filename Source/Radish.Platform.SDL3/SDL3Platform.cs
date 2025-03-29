@@ -52,6 +52,9 @@ public sealed partial class SDL3Platform : IPlatformBackend
                  SDL_InitFlags.SDL_INIT_SENSOR);
         if (!success)
             throw new PlatformException($"SDL_Init failed: {SDL_GetError()}");
+
+        var v = SDL_GetVersion();
+        Logger.Info("SDL version: {0}.{1}.{2}", v / 1000000, (v / 1000) % 1000, (v % 1000));
     }
 
     public void Dispose()
@@ -75,14 +78,21 @@ public sealed partial class SDL3Platform : IPlatformBackend
             case SDL_EventType.SDL_EVENT_QUIT:
                 WantsToQuit = true;
                 break;
+            case SDL_EventType.SDL_EVENT_RENDER_TARGETS_RESET:
+            case SDL_EventType.SDL_EVENT_RENDER_DEVICE_RESET:
+                OnGpuDeviceReset(in ev);
+                break;
+            case SDL_EventType.SDL_EVENT_RENDER_DEVICE_LOST:
+                OnGpuDeviceLost();
+                break;
         }
     }
     
-    public IntPtr CreateWindow()
+    public IntPtr CreateWindow(Size size)
     {
         const SDL_WindowFlags flags = SDL_WindowFlags.SDL_WINDOW_HIDDEN 
                                       | SDL_WindowFlags.SDL_WINDOW_HIGH_PIXEL_DENSITY;
-        var wnd = SDL_CreateWindow("Window", 800, 600, flags);
+        var wnd = SDL_CreateWindow("Window", size.Width, size.Height, flags);
         if (wnd == IntPtr.Zero)
         {
             throw new PlatformException($"Failed to create window: {SDL_GetError()}");
@@ -123,7 +133,23 @@ public sealed partial class SDL3Platform : IPlatformBackend
             return Size.Empty;
         return new Size(w, h);
     }
-    
+
+    public void ShowWindow(IntPtr window)
+    {
+        if (window == IntPtr.Zero)
+            return;
+
+        SDL_ShowWindow(window);
+    }
+
+    public void HideWindow(IntPtr window)
+    {
+        if (window == IntPtr.Zero)
+            return;
+
+        SDL_HideWindow(window);
+    }
+
     public string GetBasePath()
     {
         return SDL_GetBasePath();
@@ -135,5 +161,15 @@ public sealed partial class SDL3Platform : IPlatformBackend
         var name = SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING);
         return SDL_GetPrefPath(creator.ReplaceAll(Path.GetInvalidPathChars(), '_'),
             name.ReplaceAll(Path.GetInvalidPathChars(), '_'));
+    }
+
+    public double GetPerformanceCounter()
+    {
+        return SDL_GetPerformanceCounter();
+    }
+
+    public double GetPerformanceCounterFrequency()
+    {
+        return SDL_GetPerformanceFrequency();
     }
 }

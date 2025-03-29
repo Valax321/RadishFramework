@@ -13,9 +13,11 @@
     <ItemGroup>
         <ProjectReference Include="..\Radish.Core\Radish.Core.csproj"/>
         <ProjectReference Include="..\Radish.Filesystem\Radish.Filesystem.csproj"/>
+        <ProjectReference Include="..\Radish.Serialization\Radish.Serialization.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="BCnEncoder.Net" Version="2.2.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
     </ItemGroup>
 

@@ -6,12 +6,6 @@
         <Copyright>Copyright © Radish Games. All rights reserved.</Copyright>
         <RootNamespace>Radish</RootNamespace>
 
-        <ItemGroup>
-            <PackageReference Include="GitVersion.MsBuild" Version="6.1.0">
-                <PrivateAssets>all</PrivateAssets>
-            </PackageReference>
-        </ItemGroup>
-
         <!-- Note: these only tell you which platform we are BUILDING on, not the runtime target -->
         <RadishIsWindows>$([MSBuild]::IsOSPlatform('Windows'))</RadishIsWindows>
         <RadishIsMac>$([MSBuild]::IsOSPlatform('OSX'))</RadishIsMac>
@@ -22,4 +16,9 @@
         <RadishRuntimeIsMac>$(RuntimeIdentifier.StartsWith('osx'))</RadishRuntimeIsMac>
         <RadishRuntimeIsLinux>$(RuntimeIdentifier.StartsWith('linux'))</RadishRuntimeIsLinux>
     </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="GitVersion.MsBuild" Version="6.1.0">
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
 </Project>

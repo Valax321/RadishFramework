@@ -22,10 +22,20 @@ public class Window : IDisposable
 
     private readonly IPlatformBackend _backend;
 
-    internal Window(IPlatformBackend backend)
+    internal Window(IPlatformBackend backend, Size size)
     {
         _backend = backend;
-        Handle = backend.CreateWindow();
+        Handle = backend.CreateWindow(size);
+    }
+
+    public void Show()
+    {
+        _backend.ShowWindow(Handle);
+    }
+
+    public void Hide()
+    {
+        _backend.HideWindow(Handle);
     }
 
     public virtual void Dispose()

@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Radish.TestGame</RootNamespace>
+        <Title>RadishFramework Test Game</Title>
+        <Authors>Audrey Castillo</Authors>
+        <Description>Test game for Radish Framework</Description>
+        <Copyright>Copyright (c) Audrey Castillo. All rights reserved.</Copyright>
+        <PublishAot>true</PublishAot>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Source\Radish.GameFramework\Radish.GameFramework.csproj"/>
+        <ProjectReference Include="..\Source\Radish.Platform.SDL3\Radish.Platform.SDL3.csproj"/>
+        <ProjectReference Include="..\Source\Radish.Serialization\Radish.Serialization.csproj"/>
+    </ItemGroup>
+
+</Project>

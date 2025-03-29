@@ -11,6 +11,6 @@ public abstract class ClassRegistry<T>
 
     protected static void RegisterClass<TClass>() where TClass : T
     {
-        _typeRegistry.Add(ClassId.FromType(typeof(T)), typeof(T));
+        _typeRegistry.Add(ClassId.FromType<T>(), typeof(T));
     }
 }
