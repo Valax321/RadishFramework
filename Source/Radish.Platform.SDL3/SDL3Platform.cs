@@ -27,6 +27,8 @@ public sealed unsafe partial class SDL3Platform : IPlatformBackend
     public string Name => "SDL3";
     public bool WantsToQuit { get; private set; }
 
+    private IntPtr _mainWindow;
+
     private SDL3Platform()
     {
         SDL_SetLogOutputFunction(OnSDL_Log, IntPtr.Zero);
@@ -245,6 +247,20 @@ public sealed unsafe partial class SDL3Platform : IPlatformBackend
                 break;
 
             #endregion
+
+            #region Text Input
+
+            case SDL_EventType.SDL_EVENT_TEXT_INPUT:
+            {
+                var s = Utf8StringMarshaller.ConvertToManaged(ev.text.text);
+                if (string.IsNullOrEmpty(s))
+                    break;
+                foreach (var c in s)
+                    TextInput.NotifyTextInput(c);
+            }
+                break;
+
+            #endregion
         }
     }
     
@@ -402,6 +418,28 @@ public sealed unsafe partial class SDL3Platform : IPlatformBackend
         if (name == null!)
             Logger.Warn("SDL_GetMouseNameForID error: {0}", SDL_GetError());
         return name ?? string.Empty;
+    }
+
+    public void BeginTextInput()
+    {
+        SDL_StartTextInput(_mainWindow);
+    }
+
+    public void EndTextInput()
+    {
+        SDL_StopTextInput(_mainWindow);
+    }
+
+    public void SetTextInputRect(Rectangle rect)
+    {
+        var r = new SDL_Rect
+        {
+            x = rect.X,
+            y = rect.Y,
+            w = rect.Width,
+            h = rect.Height
+        };
+        SDL_SetTextInputArea(_mainWindow, ref r, 0);
     }
 
     // I have taken these ungodly lookup tables from FNA since we're using XNA's Keys enum too,
@@ -803,12 +841,15 @@ public sealed unsafe partial class SDL3Platform : IPlatformBackend
             throw new PlatformException($"Failed to create window: {SDL_GetError()}");
         }
 
+        _mainWindow = wnd;
+
         return wnd;
     }
 
     public void DestroyWindow(IntPtr window)
     {
         SDL_DestroyWindow(window);
+        _mainWindow = IntPtr.Zero;
     }
 
     public void SetWindowTitle(IntPtr window, string title)

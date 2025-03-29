@@ -68,4 +68,12 @@ public interface IPlatformBackend : IDisposable
     string GetMouseName(uint id);
 
     #endregion
+
+    #region Text Input
+
+    void BeginTextInput();
+    void EndTextInput();
+    void SetTextInputRect(Rectangle rect);
+
+    #endregion
 }
