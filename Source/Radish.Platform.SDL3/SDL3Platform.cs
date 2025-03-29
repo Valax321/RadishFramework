@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
+using System.Numerics;
 using System.Reflection;
+using System.Runtime.InteropServices.Marshalling;
 using JetBrains.Annotations;
 using Radish.Graphics;
 using Radish.Input;
@@ -10,7 +12,7 @@ using static SDL3.SDL;
 
 namespace Radish.Platform;
 
-public sealed partial class SDL3Platform : IPlatformBackend
+public sealed unsafe partial class SDL3Platform : IPlatformBackend
 {
     private static readonly ILogger Logger = LogManager.GetLoggerForType<SDL3Platform>();
 
@@ -27,6 +29,9 @@ public sealed partial class SDL3Platform : IPlatformBackend
 
     private SDL3Platform()
     {
+        SDL_SetLogOutputFunction(OnSDL_Log, IntPtr.Zero);
+        SDL_SetLogPriorities(SDL_LogPriority.SDL_LOG_PRIORITY_WARN);
+        
         var assembly = Assembly.GetEntryAssembly();
         if (assembly is not null)
         {
@@ -36,7 +41,7 @@ public sealed partial class SDL3Platform : IPlatformBackend
             var copyright = assembly.GetCustomAttribute<AssemblyCopyrightAttribute>();
             var name = assembly.GetName();
 
-            var identifier = $"com.{company?.Company.ToLower()}.{name.Name?.ToLower()}";
+            var identifier = $"com.{company?.Company.ToLower().RemoveAll(' ')}.{name.Name?.ToLower().RemoveAll(' ')}";
 
             SDL_SetAppMetadata(
                 product?.Product ?? string.Empty,
@@ -60,8 +65,36 @@ public sealed partial class SDL3Platform : IPlatformBackend
         Logger.Info("SDL version: {0}.{1}.{2}", v / 1000000, (v / 1000) % 1000, (v % 1000));
     }
 
+    private void OnSDL_Log(IntPtr userdata, int category, SDL_LogPriority priority, byte* message)
+    {
+        var msg = Utf8StringMarshaller.ConvertToManaged(message);
+        switch (priority)
+        {
+            case SDL_LogPriority.SDL_LOG_PRIORITY_TRACE:
+            case SDL_LogPriority.SDL_LOG_PRIORITY_VERBOSE:
+            case SDL_LogPriority.SDL_LOG_PRIORITY_DEBUG:
+            case SDL_LogPriority.SDL_LOG_PRIORITY_INFO:
+                Logger.Info("{0}", msg);
+                break;
+            case SDL_LogPriority.SDL_LOG_PRIORITY_WARN:
+                Logger.Warn("{0}", msg);
+                break;
+            case SDL_LogPriority.SDL_LOG_PRIORITY_ERROR:
+                Logger.Error("{0}", msg);
+                break;
+            case SDL_LogPriority.SDL_LOG_PRIORITY_CRITICAL:
+                Logger.Error("{0}", msg);
+                break;
+            default:
+                return;
+        }
+    }
+
     public void Dispose()
     {
+        var pads = (void**)SDL_GetGamepads(out var count);
+        for (var i = 0; i < count; ++i)
+            SDL_CloseGamepad((IntPtr)pads[i]);
         SDL_Quit();
     }
 
@@ -74,7 +107,7 @@ public sealed partial class SDL3Platform : IPlatformBackend
         }
     }
 
-    private unsafe void ProcessEvent(in SDL_Event ev)
+    private void ProcessEvent(in SDL_Event ev)
     {
         switch ((SDL_EventType)ev.type)
         {
@@ -174,9 +207,47 @@ public sealed partial class SDL3Platform : IPlatformBackend
                 break;
 
             #endregion
+
+            #region Mice
+
+            case SDL_EventType.SDL_EVENT_MOUSE_ADDED:
+            {
+                Mouse.NotifyMouseAdded(ev.mdevice.which);
+            }
+                break;
+            case SDL_EventType.SDL_EVENT_MOUSE_REMOVED:
+            {
+                Mouse.NotifyMouseRemoved(ev.mdevice.which);
+            }
+                break;
+            case SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN:
+            {
+                Mouse.NotifyButtonDown(ev.button.which, MapSDLMouseButtonToGame((SDL_MouseButtonFlags)ev.button.button));
+            }
+                break;
+            case SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP:
+            {
+                Mouse.NotifyButtonUp(ev.button.which, MapSDLMouseButtonToGame((SDL_MouseButtonFlags)ev.button.button));
+                
+                Mouse.NotifyClick(ev.button.which, MapSDLMouseButtonToGame((SDL_MouseButtonFlags)ev.button.button), 
+                    ev.button.clicks);
+            }
+                break;
+            case SDL_EventType.SDL_EVENT_MOUSE_MOTION:
+            {
+                Mouse.NotifyMouseMovement(ev.motion.which, new Vector2(ev.motion.x, ev.motion.y));
+            }
+                break;
+            case SDL_EventType.SDL_EVENT_MOUSE_WHEEL:
+            {
+                Mouse.NotifyMouseWheelPosition(ev.wheel.which, new Vector2(ev.wheel.x, ev.wheel.y));
+            }
+                break;
+
+            #endregion
         }
     }
-
+    
     public GamepadType GetGamepadType(uint id)
     {
         return MapSDLGamepadTypeToGame(SDL_GetGamepadTypeForID(id));
@@ -227,6 +298,27 @@ public sealed partial class SDL3Platform : IPlatformBackend
         }
     }
 
+    public string GetGamepadSerial(uint id)
+    {
+        var gamepad = SDL_GetGamepadFromID(id);
+        if (gamepad == IntPtr.Zero)
+            return string.Empty;
+        return SDL_GetGamepadSerial(gamepad);
+    }
+
+    private static MouseButton MapSDLMouseButtonToGame(SDL_MouseButtonFlags button)
+    {
+        return button switch
+        {
+            SDL_MouseButtonFlags.SDL_BUTTON_LMASK => MouseButton.Left,
+            SDL_MouseButtonFlags.SDL_BUTTON_MMASK => MouseButton.Middle,
+            SDL_MouseButtonFlags.SDL_BUTTON_RMASK => MouseButton.Right,
+            SDL_MouseButtonFlags.SDL_BUTTON_X1MASK => MouseButton.Mouse4,
+            SDL_MouseButtonFlags.SDL_BUTTON_X2MASK => MouseButton.Mouse5,
+            _ => throw new ArgumentOutOfRangeException(nameof(button), button, null)
+        };
+    }
+
     private static GamepadButton MapSDLGamepadButtonToGame(SDL_GamepadButton button)
     {
         return button switch
@@ -247,6 +339,10 @@ public sealed partial class SDL3Platform : IPlatformBackend
             SDL_GamepadButton.SDL_GAMEPAD_BUTTON_DPAD_LEFT => GamepadButton.DPadLeft,
             SDL_GamepadButton.SDL_GAMEPAD_BUTTON_DPAD_RIGHT => GamepadButton.DPadRight,
             SDL_GamepadButton.SDL_GAMEPAD_BUTTON_TOUCHPAD => GamepadButton.Touchpad,
+            SDL_GamepadButton.SDL_GAMEPAD_BUTTON_LEFT_PADDLE1 => GamepadButton.LeftPaddle1,
+            SDL_GamepadButton.SDL_GAMEPAD_BUTTON_LEFT_PADDLE2 => GamepadButton.LeftPaddle2,
+            SDL_GamepadButton.SDL_GAMEPAD_BUTTON_RIGHT_PADDLE1 => GamepadButton.RightPaddle1,
+            SDL_GamepadButton.SDL_GAMEPAD_BUTTON_RIGHT_PADDLE2 => GamepadButton.RightPaddle2,
             _ => GamepadButton.Unknown
         };
     }
@@ -290,6 +386,22 @@ public sealed partial class SDL3Platform : IPlatformBackend
 
         var keycode = SDL_GetKeyFromScancode(scancode, SDL_Keymod.SDL_KMOD_NONE, false);
         return KeycodesToKeys.GetValueOrDefault((int)keycode, Keys.None);
+    }
+
+    public string GetKeyboardName(uint id)
+    {
+        var name = SDL_GetKeyboardNameForID(id);
+        if (name == null!)
+            Logger.Warn("SDL_GetKeyboardNameForID error: {0}", SDL_GetError());
+        return name ?? string.Empty;
+    }
+
+    public string GetMouseName(uint id)
+    {
+        var name = SDL_GetMouseNameForID(id);
+        if (name == null!)
+            Logger.Warn("SDL_GetMouseNameForID error: {0}", SDL_GetError());
+        return name ?? string.Empty;
     }
 
     // I have taken these ungodly lookup tables from FNA since we're using XNA's Keys enum too,
@@ -742,6 +854,7 @@ public sealed partial class SDL3Platform : IPlatformBackend
             return;
 
         SDL_ShowWindow(window);
+        SDL_RaiseWindow(window);
     }
 
     public void HideWindow(IntPtr window)
@@ -769,8 +882,8 @@ public sealed partial class SDL3Platform : IPlatformBackend
     {
         var creator = SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_CREATOR_STRING);
         var name = SDL_GetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING);
-        return SDL_GetPrefPath(creator.ReplaceAll(Path.GetInvalidPathChars(), '_'),
-            name.ReplaceAll(Path.GetInvalidPathChars(), '_'));
+        return SDL_GetPrefPath(creator.ReplaceAll('_', Path.GetInvalidPathChars()),
+            name.ReplaceAll('_', Path.GetInvalidPathChars()));
     }
 
     public double GetPerformanceCounter()

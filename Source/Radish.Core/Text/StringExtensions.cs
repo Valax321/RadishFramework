@@ -20,12 +20,26 @@ public static class StringExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ReplaceAll(this string s, ReadOnlySpan<char> chars, char replacement)
+    public static string ReplaceAll(this string s, char replacement, params ReadOnlySpan<char> chars)
     {
         using var sb = ZString.CreateStringBuilder();
         foreach (var c in s)
         {
             sb.Append(chars.Contains(c) ? replacement : c);
+        }
+
+        return sb.ToString();
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string RemoveAll(this string s, params ReadOnlySpan<char> chars)
+    {
+        using var sb = ZString.CreateStringBuilder();
+        foreach (var c in s)
+        {
+            if (chars.Contains(c))
+                continue;
+            sb.Append(c);
         }
 
         return sb.ToString();

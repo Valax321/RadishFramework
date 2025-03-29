@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Drawing;
 using Microsoft.Extensions.DependencyInjection;
 using Radish.Framework;
@@ -49,17 +48,20 @@ public class GraphicsDeviceManager : IDisposable, IGraphicsDevice
         _device = Renderer.InitDeviceWithWindowHandle(_window.Handle, out var s, out var d);
         BackbufferSize = s;
         DisplayIndex = d;
-        Renderer.SetVsyncEnabled(_device, _window.Handle, true);
+        _vsyncEnabled = Renderer.SetVsyncEnabled(_device, _window.Handle, true);
     }
 
     private void OnReset(IntPtr window, Size size, uint display)
     {
         if (window == _window.Handle)
         {
-            Logger.Info("Device reset: {0}, display {1}", size.ToString(), display);
+            Logger.Debug("Device reset: {0}, display {1}", size.ToString(), display);
             BackbufferSize = size;
             DisplayIndex = display;
             ResetCallback?.Invoke();
+            
+            // Since we might have moved to a new window, swapchain details may have changed
+            _vsyncEnabled = Renderer.SetVsyncEnabled(_device, _window.Handle, EnableVSync);
         }
     }
 

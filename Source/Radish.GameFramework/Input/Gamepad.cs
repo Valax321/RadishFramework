@@ -10,9 +10,10 @@ public sealed class Gamepad
 {
     private static readonly ILogger Logger = LogManager.GetLoggerForType<Gamepad>();
     
-    private static readonly Dictionary<int, Gamepad> Gamepads = [];
-    public static int Count { get; private set; }
+    private static readonly Dictionary<uint, Gamepad> Gamepads = [];
+    public static int Count => Gamepads.Count;
     public static int CurrentActiveGamepadIndex { get; private set; } = -1;
+    public static IEnumerable<Gamepad> All => Gamepads.Values;
     
     private static IPlatformBackend _platform = null!;
 
@@ -65,52 +66,71 @@ public sealed class Gamepad
         _platform = platform;
     }
 
-    public static GamepadState GetState(int index)
+    public static GamepadState GetState(uint index)
     {
         if (Gamepads.TryGetValue(index, out var gs))
             return gs._state;
         throw new ArgumentOutOfRangeException(nameof(index), index, null);
     }
 
-    public static Gamepad GetGamepad(int index)
+    public static Gamepad GetGamepad(uint index)
     {
         if (Gamepads.TryGetValue(index, out var gs))
             return gs;
         throw new ArgumentOutOfRangeException(nameof(index), index, null);
     }
-    
-    private static Gamepad AddGamepadWithIndex(int index)
+
+    public static bool TryGetGamepadWithPlayerIndex(int playerIndex, out uint id)
     {
-        if (index < 0)
-            throw new ArgumentOutOfRangeException(nameof(index), index, null);
-        
+        foreach (var (_, gp) in Gamepads)
+        {
+            if (gp.PlayerIndex != playerIndex) 
+                continue;
+            
+            id = gp.Id;
+            return true;
+        }
+
+        id = 0;
+        return false;
+    }
+    
+    private static Gamepad AddGamepadWithIndex(uint index)
+    {
         if (Gamepads.TryGetValue(index, out var gp)) 
             return gp;
-        gp = new Gamepad();
+        gp = new Gamepad
+        {
+            Id = index
+        };
         Gamepads.Add(index, gp);
         return gp;
     }
 
     internal static void NotifyGamepadAdded(uint id, GamepadType type)
     {
-        var gs = AddGamepadWithIndex((int)id);
-        gs.Id = id;
+        var gs = AddGamepadWithIndex(id);
         gs.Connected = true;
-        Count++;
+        Logger.Info("Gamepad connected: {0} ({1})", gs.Name, gs.Id);
+        Logger.Info("Player index: {0}", gs.PlayerIndex);
+        Logger.Info("Type: {0}", gs.Type);
     }
     
     internal static void NotifyGamepadRemoved(uint id)
     {
-        if (Gamepads.TryGetValue((int)id, out var gp))
+        if (Gamepads.TryGetValue(id, out var gp))
         {
             gp.Connected = false;
+            Gamepads.Remove(id);
+            Logger.Info("Gamepad disconnected: {0}", id);
+            if (CurrentActiveGamepadIndex == id)
+                CurrentActiveGamepadIndex = -1;
         }
-        Count--;
     }
 
     internal static void NotifyButtonDown(uint id, GamepadButton button)
     {
-        if (Gamepads.TryGetValue((int)id, out var gp))
+        if (Gamepads.TryGetValue(id, out var gp))
         {
             gp._state[button] = ButtonState.Down;
             CurrentActiveGamepadIndex = (int)id;
@@ -119,7 +139,7 @@ public sealed class Gamepad
 
     internal static void NotifyButtonUp(uint id, GamepadButton button)
     {
-        if (Gamepads.TryGetValue((int)id, out var gp))
+        if (Gamepads.TryGetValue(id, out var gp))
         {
             gp._state[button] = ButtonState.Up;
         }
@@ -127,7 +147,7 @@ public sealed class Gamepad
 
     internal static void NotifyAxisChanged(uint id, GamepadAxis axis, float value)
     {
-        if (Gamepads.TryGetValue((int)id, out var gp))
+        if (Gamepads.TryGetValue(id, out var gp))
         {
             gp._state[axis] = value;
         }
@@ -135,6 +155,9 @@ public sealed class Gamepad
 
     internal static void NotifyRemapped(uint id, GamepadType type)
     {
-        
+        if (Gamepads.TryGetValue(id, out var gp))
+        {
+            Logger.Info("Gamepad remapped: {0}", gp.Name);
+        }
     }
 }

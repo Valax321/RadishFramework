@@ -52,12 +52,20 @@ public interface IPlatformBackend : IDisposable
     int GetGamepadPlayerIndex(uint id);
     void SetGamepadLED(uint id, Color color);
     void SendGamepadRumblePacket(uint id, in GamepadRumbleState state);
+    string GetGamepadSerial(uint id);
 
     #endregion
     
     #region Keyboard
 
     Keys ScancodeToKeycode(Keys scancode);
+    string GetKeyboardName(uint id);
+
+    #endregion
+    
+    #region Mice
+
+    string GetMouseName(uint id);
 
     #endregion
 }

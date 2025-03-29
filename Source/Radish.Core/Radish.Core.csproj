@@ -18,4 +18,24 @@
         <PackageReference Include="ZString" Version="2.6.0"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Logging\ILogger.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>ILogger.cs</LastGenOutput>
+      </None>
+      <None Update="Logging\RadishLogger.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>RadishLogger.cs</LastGenOutput>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Logging\ILogger.cs">
+        <DependentUpon>ILogger.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Logging\RadishLogger.cs">
+        <DependentUpon>RadishLogger.tt</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>

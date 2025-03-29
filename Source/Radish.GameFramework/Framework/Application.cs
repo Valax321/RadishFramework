@@ -33,7 +33,7 @@ public abstract class Application : IDisposable
     private List<IGameUpdate> _orderedUpdatables = [];
     private List<IGameDraw> _orderedDrawables = [];
     private double _lastUpdateTime;
-    private IGraphicsDevice _graphicsDevice;
+    private IGraphicsDevice _graphicsDevice = null!;
 
     protected Application(in ApplicationOptions options)
     {
@@ -46,10 +46,12 @@ public abstract class Application : IDisposable
         
         Keyboard.SetPlatformBackend(Platform);
         Gamepad.SetPlatformBackend(Platform);
+        Mouse.SetPlatformBackend(Platform);
     }
 
     public void Run()
     {
+        Logger.Debug("Beginning application main loop...");
         ResolveServices(ServiceCollection);
         Initialize();
         RunMainLoop();
@@ -120,7 +122,7 @@ public abstract class Application : IDisposable
 
     protected virtual void Quit()
     {
-        
+        Logger.Debug("Application quitting...");
     }
     
     protected virtual void Dispose(bool disposing)

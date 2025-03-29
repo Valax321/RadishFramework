@@ -217,20 +217,10 @@ public partial class SDL3Platform : IPlatformRenderer
         }
         else
         {
-            Logger.Info("Successfully set swapchain parameters: {0}, {1}", compMode, presentMode);
+            Logger.Debug("Successfully set swapchain parameters: {0}, {1}", compMode, presentMode);
         }
 
         return presentMode is SDL_GPUPresentMode.SDL_GPU_PRESENTMODE_VSYNC
             or SDL_GPUPresentMode.SDL_GPU_PRESENTMODE_MAILBOX;
-    }
-
-    private void OnGpuDeviceReset(in SDL_Event ev)
-    {
-        
-    }
-
-    private void OnGpuDeviceLost()
-    {
-        
     }
 }

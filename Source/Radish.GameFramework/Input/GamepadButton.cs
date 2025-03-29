@@ -18,5 +18,9 @@ public enum GamepadButton
     Options,
     Back,
     Guide,
-    Touchpad
+    Touchpad,
+    LeftPaddle1,
+    LeftPaddle2,
+    RightPaddle1,
+    RightPaddle2,
 }
