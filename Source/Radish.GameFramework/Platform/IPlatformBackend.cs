@@ -25,6 +25,7 @@ public interface IPlatformBackend : IDisposable
     void ShowWindow(IntPtr window);
     void HideWindow(IntPtr window);
     uint GetWindowDisplayIndex(IntPtr window);
+    float GetWindowDisplayScale(IntPtr window);
     #endregion
 
     #region Paths

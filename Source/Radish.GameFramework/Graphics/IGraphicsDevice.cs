@@ -16,6 +16,9 @@ public interface IGraphicsDevice
         }
     }
     
+    public Size BackbufferSize { get; }
+    public float DisplayScale { get; }
+    
     protected DeviceResetDelegate? ResetCallback { get; set; }
 
     void BeginFrame();

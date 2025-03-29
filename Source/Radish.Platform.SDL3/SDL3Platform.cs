@@ -914,6 +914,14 @@ public sealed unsafe partial class SDL3Platform : IPlatformBackend
         return SDL_GetDisplayForWindow(window);
     }
 
+    public float GetWindowDisplayScale(IntPtr window)
+    {
+        if (window == IntPtr.Zero)
+            return 1.0f;
+        
+        return SDL_GetWindowDisplayScale(window);
+    }
+
     public string GetBasePath()
     {
         return SDL_GetBasePath();

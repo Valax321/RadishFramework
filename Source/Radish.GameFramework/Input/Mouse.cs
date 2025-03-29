@@ -44,6 +44,11 @@ public sealed class Mouse
             return kb._state;
         throw new ArgumentOutOfRangeException(nameof(index), index, null);
     }
+
+    public static void SetPosition(int x, int y)
+    {
+        
+    }
     
     public static Mouse GetMouse(uint index)
     {

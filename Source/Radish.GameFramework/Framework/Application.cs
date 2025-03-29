@@ -47,6 +47,7 @@ public abstract class Application : IDisposable
         Keyboard.SetPlatformBackend(Platform);
         Gamepad.SetPlatformBackend(Platform);
         Mouse.SetPlatformBackend(Platform);
+        TextInput.SetPlatformBackend(Platform);
     }
 
     public void Run()

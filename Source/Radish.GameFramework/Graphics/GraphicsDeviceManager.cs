@@ -16,6 +16,7 @@ public class GraphicsDeviceManager : IDisposable, IGraphicsDevice
     private IPlatformRenderer Renderer { get; }
     private IntPtr _device;
     private readonly Window _window;
+    private readonly IPlatformBackend _platform;
 
     private HashSet<IntPtr> _allocatedTextures = [];
     private IGraphicsDevice.DeviceResetDelegate? _onDeviceReset;
@@ -33,6 +34,8 @@ public class GraphicsDeviceManager : IDisposable, IGraphicsDevice
     }
 
     public Size BackbufferSize { get; private set; }
+
+    public float DisplayScale => _platform.GetWindowDisplayScale(_window.Handle);
     public uint DisplayIndex { get; private set; }
 
     private bool _vsyncEnabled;
@@ -43,6 +46,8 @@ public class GraphicsDeviceManager : IDisposable, IGraphicsDevice
         
         Renderer = app.Platform.GetRenderBackend();
         _onResetCalledByBackend += OnReset;
+
+        _platform = app.Platform;
 
         _window = app.Window;
         _device = Renderer.InitDeviceWithWindowHandle(_window.Handle, out var s, out var d);
